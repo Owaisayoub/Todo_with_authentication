@@ -39,7 +39,7 @@ This is a simple FastAPI application that allows users to manage their todo item
 
 2. **POST /signup/**
    - Create a new user account.
-   - Requires providing username, email, and password.
+   - Requires providing username, and password.
 
 ## Authentication
 
@@ -65,7 +65,8 @@ This is a simple FastAPI application that allows users to manage their todo item
 
 - The API documentation (Swagger UI) is available at `http://localhost:8000/docs`.
 - You can explore and test the API endpoints using the Swagger UI.
+- You can also you postman(personal favorite)
 
 ## Author
 
-- [Your Name]
+- owais Ayoub Ganaie
