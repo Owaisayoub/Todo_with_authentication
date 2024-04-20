@@ -1,3 +1,4 @@
+import os
 from fastapi.security import OAuth2PasswordBearer
 from fastapi import HTTPException
 from datetime import datetime, timedelta
@@ -7,8 +8,10 @@ from passlib.context import CryptContext
 from config.database import user_collection
 #///
 
-SECRET_KEY = "JF4tT8aYmmw2vq9KuMWHmdRK"
-ALGORITHM = "HS256"
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
+# print(SECRET_KEY)
+
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
