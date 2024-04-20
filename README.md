@@ -67,6 +67,15 @@ This is a simple FastAPI application that allows users to manage their todo item
 - You can explore and test the API endpoints using the Swagger UI.
 - You can also you postman(personal favorite)
 
+## Environment Variables
+
+This project uses the following environment variables:
+
+- **SECRET_KEY**: Used for encryption and security purposes.
+- **DATABASE_URL**: URL of the database used by the application.
+
+Make sure to set these environment variables before running the application. You can customize their values according to your environment.
+
 ## Author
 
 - **Owais Ayoub Ganaie**
