@@ -69,4 +69,4 @@ This is a simple FastAPI application that allows users to manage their todo item
 
 ## Author
 
-- owais Ayoub Ganaie
+- **Owais Ayoub Ganaie**
