@@ -48,6 +48,15 @@ This is a simple FastAPI application that allows users to manage their todo item
 - Users can create a new account using the `/signup/` endpoint.
 - The access token obtained after login/signup must be included in the `Authorization` header of requests to todo endpoints.
 
+## Environment Variables
+
+This project uses the following environment variables:
+
+- **SECRET_KEY**: Used for encryption and security purposes.
+- **DATABASE_URL**: URL of the database used by the application.
+
+Make sure to set these environment variables before running the application. You can customize their values according to your environment.
+
 ## How to Run
 
 1. Install Python (if not already installed).
@@ -66,15 +75,6 @@ This is a simple FastAPI application that allows users to manage their todo item
 - The API documentation (Swagger UI) is available at `http://localhost:8000/docs`.
 - You can explore and test the API endpoints using the Swagger UI.
 - You can also you postman(personal favorite)
-
-## Environment Variables
-
-This project uses the following environment variables:
-
-- **SECRET_KEY**: Used for encryption and security purposes.
-- **DATABASE_URL**: URL of the database used by the application.
-
-Make sure to set these environment variables before running the application. You can customize their values according to your environment.
 
 ## Author
 
