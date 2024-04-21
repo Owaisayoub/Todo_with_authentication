@@ -1,18 +1,15 @@
-from pydantic import BaseModel,Field
+from pydantic import BaseModel, Field
 
-
-#create a model by inheriting the BaseModel
-
+# Define a model for Todo items
 class Todo(BaseModel):
-    
-    # id: str 
+    """
+    Model representing a Todo item.
+
+    Attributes:
+    - title (str): Title of the Todo item.
+    - description (str): Description of the Todo item.
+    - completed (bool): Completion status of the Todo item.
+    """
     title: str
     description: str
     completed: bool
-    # user_id: str = Field(..., title="User ID", description="The ID of the user who created the todo")
-
-# class UserTodo(BaseModel):
-#     title: str
-#     description: str
-#     completed: bool
-#     # user_id: str

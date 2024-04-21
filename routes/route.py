@@ -2,17 +2,27 @@ from fastapi import Response, APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from bson import ObjectId
 
-
 from models.todos import Todo
 from config.database import todo_collection, user_collection
 from auth.auth import *
 
-
 router = APIRouter()
-
 
 @router.get('/todo/', response_model=dict)
 async def get_todos(response: Response, token: str = Depends(oauth2_scheme)):
+    """
+    Retrieve all todos for the authenticated user.
+
+    Parameters:
+    - response (Response): FastAPI response object.
+    - token (str, optional): Authorization token. Defaults to Depends(oauth2_scheme).
+
+    Returns:
+    - dict: Dictionary containing the status and data of the todos.
+
+    Raises:
+    - HTTPException: If authentication fails or there's an issue with retrieving todos.
+    """
     try:
         user = authenticate(token)
         user_id = str(user["_id"])
@@ -22,7 +32,6 @@ async def get_todos(response: Response, token: str = Depends(oauth2_scheme)):
         for todo in todos_objects:
             todo["_id"] = str(todo["_id"])
             del todo["user_id"]
-            # print(todo)
             todos.append(todo)
         
         return {
@@ -35,11 +44,24 @@ async def get_todos(response: Response, token: str = Depends(oauth2_scheme)):
             "status": "fail",
             "status_code": e.status_code,
             "data": e.detail
-
         }
 
 @router.get('/todo/{id}', response_model=dict)
-async def get_todo(id: str,response: Response, token: str= Depends(oauth2_scheme)):
+async def get_todo(id: str, response: Response, token: str = Depends(oauth2_scheme)):
+    """
+    Retrieve a specific todo for the authenticated user by its ID.
+
+    Parameters:
+    - id (str): ID of the todo to retrieve.
+    - response (Response): FastAPI response object.
+    - token (str, optional): Authorization token. Defaults to Depends(oauth2_scheme).
+
+    Returns:
+    - dict: Dictionary containing the status and data of the todo.
+
+    Raises:
+    - HTTPException: If authentication fails or the todo with the specified ID is not found.
+    """
     try:
         user = authenticate(token)
         user_id = str(user["_id"])
@@ -58,12 +80,24 @@ async def get_todo(id: str,response: Response, token: str= Depends(oauth2_scheme
             "status": "fail",
             "status_code": e.status_code,
             "data": e.detail
-
         }
 
 @router.post('/todo/', response_model=dict)
 async def post_todo(todo: Todo, response: Response, token: str = Depends(oauth2_scheme)):
-    
+    """
+    Create a new todo for the authenticated user.
+
+    Parameters:
+    - todo (Todo): Todo model object containing todo details.
+    - response (Response): FastAPI response object.
+    - token (str, optional): Authorization token. Defaults to Depends(oauth2_scheme).
+
+    Returns:
+    - dict: Dictionary containing the status and data of the created todo.
+
+    Raises:
+    - HTTPException: If authentication fails or there's an issue with creating the todo.
+    """
     try:
         user = authenticate(token)
            
@@ -91,26 +125,34 @@ async def post_todo(todo: Todo, response: Response, token: str = Depends(oauth2_
             "status": "Fail",
             "status_code": e.status_code,
             "data": e.detail
-
         }
 
-
 @router.patch('/todo/{id}', response_model=dict)
-async def update_todo(id: str,response: Response, todo: Todo, token: str = Depends(oauth2_scheme)):
-    
+async def update_todo(id: str, response: Response, todo: Todo, token: str = Depends(oauth2_scheme)):
+    """
+    Update a specific todo for the authenticated user by its ID.
+
+    Parameters:
+    - id (str): ID of the todo to update.
+    - response (Response): FastAPI response object.
+    - todo (Todo): Todo model object containing updated todo details.
+    - token (str, optional): Authorization token. Defaults to Depends(oauth2_scheme).
+
+    Returns:
+    - dict: Dictionary containing the status and data of the updated todo.
+
+    Raises:
+    - HTTPException: If authentication fails, the todo with the specified ID is not found, or there's an issue with updating the todo.
+    """
     try:
         user = authenticate(token)
         user_id = str(user["_id"])
-        # print(user_id)
-
 
         updated_todo = todo_collection.find_one_and_update({"_id": ObjectId(id), "user_id": user_id}, {"$set": dict(todo)})
         if not updated_todo:
             raise HTTPException(status_code=404, detail="Not Found")
         
         updated_todo["_id"] = str(updated_todo["_id"])
-        
-        # res = dict(updated_todo)
         del updated_todo["user_id"]
 
         return {
@@ -123,19 +165,27 @@ async def update_todo(id: str,response: Response, todo: Todo, token: str = Depen
             "status": "Fail",
             "status_code": e.status_code,
             "data": e.detail
-
         }
 
-        
-
-@router.delete('/todo/{id}',)
+@router.delete('/todo/{id}')
 async def delete_todo(id: str, response: Response, token: str = Depends(oauth2_scheme)):
+    """
+    Delete a specific todo for the authenticated user by its ID.
 
+    Parameters:
+    - id (str): ID of the todo to delete.
+    - response (Response): FastAPI response object.
+    - token (str, optional): Authorization token. Defaults to Depends(oauth2_scheme).
+
+    Returns:
+    - dict: Dictionary containing the status of the deletion operation.
+
+    Raises:
+    - HTTPException: If authentication fails, or the todo with the specified ID is not found.
+    """
     try:
         user = authenticate(token)
-        
         user_id = str(user["_id"])
-
     
         result = todo_collection.find_one_and_delete({"_id": ObjectId(id), "user_id": user_id})
         if not result:
@@ -151,11 +201,22 @@ async def delete_todo(id: str, response: Response, token: str = Depends(oauth2_s
             "status": "Fail",
             "status_code": e.status_code,
             "data": e.detail
-
         }
 
 @router.post('/signup')
 async def sign_up(form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Register a new user.
+
+    Parameters:
+    - form_data (OAuth2PasswordRequestForm): Form data containing username and password.
+
+    Returns:
+    - dict: Dictionary containing the access token for the registered user.
+
+    Raises:
+    - HTTPException: If the provided username already exists.
+    """
     user_name= form_data.username
     password = form_data.password
 
@@ -169,34 +230,33 @@ async def sign_up(form_data: OAuth2PasswordRequestForm = Depends()):
     res["_id"] = str(res["_id"])
     del res["_id"]
 
-    # return res
     access_token = create_access_token(data= {"sub": user_name})
 
     return {"access_token": access_token, "token_type": "bearer"}
 
 @router.post('/login/')
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
+    """
+    Login for existing users.
+
+    Parameters:
+    - form_data (OAuth2PasswordRequestForm): Form data containing username and password.
+
+    Returns:
+    - dict: Dictionary containing the access token for the authenticated user.
+
+    Raises:
+    - HTTPException: If the provided username or password is invalid.
+    """
     user_name = form_data.username
     password = form_data.password
 
-    # we can create a validate password function in order to check if the user has entered valid password
-    #validate_password()
-
-    #get the user from the database 
     user = user_collection.find_one({"user_name": user_name})
-
-    #raise the exception if the user correspoding to user_name provided doesn't exist or there is password mismatch
     if not user:
         raise HTTPException(status_code=404, detail="Invalid username or password")
-    #To verify_password function we passed the plain password that user provided and hashed password which is in database for verificaton
+
     if not verify_password(password, user["hased_password"]):
-        
         raise HTTPException(status_code=404, detail="Invalid username or password")
     
-
-    #generate teh access token by passsing the sub as user_name
     access_token = create_access_token(data= {"sub": user_name})
     return {"access_token": access_token, "token_type": "bearer"}
-
-
-    
